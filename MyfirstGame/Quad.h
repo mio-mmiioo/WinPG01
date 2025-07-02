@@ -14,7 +14,7 @@ public:
 	Quad();
 	~Quad();
 	HRESULT Initialize();
-	void Draw();
+	void Draw(DirectX::XMMATRIX& worldMatrix);
 	void Release();
 private:
 	ID3D11Buffer* pVertexBuffer_;	//頂点バッファ

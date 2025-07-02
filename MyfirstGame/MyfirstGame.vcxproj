@@ -145,6 +145,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Direct3D.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MyfirstGame.h" />
@@ -153,6 +154,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Direct3D.cpp" />
     <ClCompile Include="MyfirstGame.cpp" />
     <ClCompile Include="Quad.cpp" />

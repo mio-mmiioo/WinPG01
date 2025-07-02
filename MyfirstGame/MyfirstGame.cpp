@@ -5,6 +5,7 @@
 #include "MyfirstGame.h"
 #include "Direct3D.h"
 #include "Quad.h"
+#include "Camera.h"
 
 #define MAX_LOADSTRING 100
 
@@ -71,7 +72,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     {
         return 0;
     }
-    
+    Camera::Initialize();
+
+
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_MYFIRSTGAME));
 
     MSG msg = {};
@@ -98,7 +101,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         Direct3D::BeginDraw();
 
         //描画処理
-        quad->Draw();
+        Camera::Update();
+
+        XMMATRIX mat = XMMatrixRotationY(XMConvertToRadians(45));
+        quad->Draw(mat);
 
         Direct3D::EndDraw();
 

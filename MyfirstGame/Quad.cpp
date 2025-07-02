@@ -1,5 +1,6 @@
 #include "Quad.h"
-//#include <DirectXMath.h>
+#include "Camera.h"
+#include <DirectXMath.h>
 
 using namespace DirectX;
 
@@ -37,6 +38,7 @@ HRESULT Quad::Initialize()
 
 	if (FAILED(hr))
 	{
+		MessageBox(nullptr, L"頂点バッファの作成に失敗しました", L"エラー", MB_OK);
 		return hr;
 	}
 
@@ -59,6 +61,7 @@ HRESULT Quad::Initialize()
 
 	if (FAILED(hr))
 	{
+		MessageBox(nullptr, L"インデックスバッファの作成に失敗しました", L"エラー", MB_OK);
 		return hr;
 	}
 
@@ -76,24 +79,19 @@ HRESULT Quad::Initialize()
 
 	if (FAILED(hr))
 	{
+		MessageBox(nullptr, L"コンスタントバッファの作成に失敗しました", L"エラー", MB_OK);
 		return hr;
 	}
 
 	return S_OK;
 }
 
-void Quad::Draw()
+void Quad::Draw(DirectX::XMMATRIX& worldMatrix)
 {
 	//コンスタントバッファに渡す情報
-	XMVECTOR position = { 0, 3, -10, 0 };	//カメラの位置
-	XMVECTOR target = { 0, 0, 0, 0 };	//カメラの焦点
-	XMMATRIX view = XMMatrixLookAtLH(position, target, XMVectorSet(0, 1, 0, 0));	//ビュー行列
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, 800.0f / 600.0f, 0.1f, 100.0f);//射影行列
-
-	CONSTANT_BUFFER cb;
-	cb.matWVP = XMMatrixTranspose(view * proj);
-
 	D3D11_MAPPED_SUBRESOURCE pdata;
+	CONSTANT_BUFFER cb;
+	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 	Direct3D::pContext->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
 	Direct3D::pContext->Unmap(pConstantBuffer_, 0);	//再開

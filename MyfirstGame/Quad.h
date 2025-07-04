@@ -1,11 +1,21 @@
 #pragma once
 #include "Direct3D.h"
 #include <DirectXMath.h>
+#include "Texture.h"
+
+using namespace DirectX;
 
 //コンスタントバッファー
 struct CONSTANT_BUFFER
 {
 	DirectX::XMMATRIX	matWVP;
+};
+
+//頂点情報
+struct VERTEX
+{
+	XMVECTOR position;
+	XMVECTOR uv;
 };
 
 class Quad

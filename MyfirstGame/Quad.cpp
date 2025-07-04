@@ -16,12 +16,12 @@ HRESULT Quad::Initialize()
 {
 	HRESULT hr;
 	//頂点情報
-	XMFLOAT4 vertices[] =
+	VERTEX  vertices[] =
 	{
-		{-1.0f,  1.0f, 0.0f, 0.0f},// 四角形の頂点（左上）
-		{ 1.0f,  1.0f, 0.0f, 0.0f},// 四角形の頂点（右上）
-		{ 1.0f, -1.0f, 0.0f, 0.0f},// 四角形の頂点（右下）
-		{-1.0f, -1.0f, 0.0f, 0.0f},// 四角形の頂点（左下）
+		{-1.0f,  1.0f, 0.0f, 0.0f, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f)},// 四角形の頂点（左上）
+		{ 1.0f,  1.0f, 0.0f, 0.0f, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f)},// 四角形の頂点（右上）
+		{ 1.0f, -1.0f, 0.0f, 0.0f, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f)},// 四角形の頂点（右下）
+		{-1.0f, -1.0f, 0.0f, 0.0f, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)},// 四角形の頂点（左下）
 	};
 
 	// 頂点データ用バッファの設定
@@ -97,7 +97,7 @@ void Quad::Draw(DirectX::XMMATRIX& worldMatrix)
 	Direct3D::pContext->Unmap(pConstantBuffer_, 0);	//再開
 
 	//頂点バッファ
-	UINT stride = sizeof(XMVECTOR);
+	UINT stride = sizeof(VERTEX);
 	UINT offset = 0;
 	Direct3D::pContext->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
 

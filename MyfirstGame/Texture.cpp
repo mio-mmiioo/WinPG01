@@ -1,7 +1,9 @@
 #include <wincodec.h>
 #include "Texture.h"
-#include "Direct3D.h"
 #include <DirectXTex.h>
+#include "Direct3D.h"
+#include <d3d11.h>
+
 // DirectXTexのライブラリをリンク
 #pragma comment(lib, "DirectXTex.lib")
 
@@ -20,9 +22,10 @@ HRESULT Texture::Load(std::string fileName)
 	DirectX::ScratchImage image;   //画像本体
 
 	HRESULT hr;
-
+ 
 	std::wstring wfileName(fileName.begin(), fileName.end());
-	hr = LoadFromWICFile(wfileName.c_str(), DirectX::WIC_FLAGS::WIC_FLAGS_NONE, &metadata, image);
+	hr = LoadFromWICFile(wfileName.c_str(), DirectX::WIC_FLAGS::WIC_FLAGS_NONE,&metadata, image);
+
 	if (FAILED(hr))
 	{
 		return S_FALSE;
@@ -34,11 +37,7 @@ HRESULT Texture::Load(std::string fileName)
 	SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
 	SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-	hr = Direct3D::pDevice->CreateSamplerState(&SamDesc, &pSampler_);
-	if (FAILED(hr))
-	{
-		return S_FALSE;
-	}
+	Direct3D::pDevice->CreateSamplerState(&SamDesc, &pSampler_);
 
 	//シェーダーリソースビュー
 	D3D11_SHADER_RESOURCE_VIEW_DESC srv = {};
@@ -51,12 +50,11 @@ HRESULT Texture::Load(std::string fileName)
 		return S_FALSE;
 	}
 
-
-	return S_OK;
+    return E_NOTIMPL;
 }
 
 void Texture::Release()
 {
-	pSampler_->Release();
-	pSRV_->Release();
+	SAFE_RELEASE(pSRV_);
+	SAFE_RELEASE(pSampler_);
 }

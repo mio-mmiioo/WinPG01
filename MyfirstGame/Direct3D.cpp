@@ -1,14 +1,14 @@
 #include <d3dcompiler.h>
 #include "Direct3D.h"
-#include <DirectXTex.h>
+#include <DirectXMath.h>
 
 //変数
 namespace Direct3D
 {
     ID3D11Device* pDevice;                              //デバイス
-	ID3D11DeviceContext* pContext;  		            //デバイスコンテキスト
-	IDXGISwapChain* pSwapChain;		                    //スワップチェイン
-	ID3D11RenderTargetView* pRenderTargetView;  	    //レンダーターゲットビュー
+    ID3D11DeviceContext* pContext;  		            //デバイスコンテキスト
+    IDXGISwapChain* pSwapChain;		                    //スワップチェイン
+    ID3D11RenderTargetView* pRenderTargetView;  	    //レンダーターゲットビュー
 
     ID3D11VertexShader* pVertexShader = nullptr;    	//頂点シェーダー
     ID3D11PixelShader* pPixelShader = nullptr;	    	//ピクセルシェーダー
@@ -106,9 +106,9 @@ HRESULT Direct3D::InitShader()
     ID3DBlob* pCompileVS = nullptr;
     D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
     assert(pCompileVS != nullptr);
-    
+
     hr = pDevice->CreateVertexShader(pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), NULL, &pVertexShader);
-    
+
     if (FAILED(hr))
     {
         return hr;
@@ -119,7 +119,7 @@ HRESULT Direct3D::InitShader()
     D3DCompileFromFile(L"Simple3D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
     assert(pCompilePS != nullptr);
     hr = pDevice->CreatePixelShader(pCompilePS->GetBufferPointer(), pCompilePS->GetBufferSize(), NULL, &pPixelShader);
-    
+
     if (FAILED(hr))
     {
         return hr;
@@ -131,7 +131,7 @@ HRESULT Direct3D::InitShader()
         { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::XMVECTOR) , D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
     };
     hr = pDevice->CreateInputLayout(layout, 1, pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &pVertexLayout);
-    
+
     if (FAILED(hr))
     {
         return hr;

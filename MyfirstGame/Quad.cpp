@@ -1,6 +1,7 @@
 #include "Quad.h"
 #include "Camera.h"
 #include <DirectXMath.h>
+#include <assert.h>
 
 using namespace DirectX;
 
@@ -16,17 +17,20 @@ HRESULT Quad::Initialize()
 {
 	HRESULT hr;
 	//頂点情報
-	VERTEX  vertices[] =
+	// 頂点情報
+	VERTEX vertices[] =
 	{
-		{-1.0f,  1.0f, 0.0f, 0.0f, XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f)},// 四角形の頂点（左上）
-		{ 1.0f,  1.0f, 0.0f, 0.0f, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f)},// 四角形の頂点（右上）
-		{ 1.0f, -1.0f, 0.0f, 0.0f, XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f)},// 四角形の頂点（右下）
-		{-1.0f, -1.0f, 0.0f, 0.0f, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)},// 四角形の頂点（左下）
+		{ XMVectorSet(-1.0f,  1.0f, 0.0f, 0.0f),XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },   // 四角形の頂点（左上）
+		{ XMVectorSet(1.0f,  1.0f, 0.0f, 0.0f),	XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) },   // 四角形の頂点（右上）
+		{ XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f),	XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) },   // 四角形の頂点（右下）
+		{ XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f),XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },   // 四角形の頂点（左下）
 	};
+
+	//const int numVertex = sizeof(vertices) / sizeof(vertices[0]);
 
 	// 頂点データ用バッファの設定
 	D3D11_BUFFER_DESC bd_vertex;
-	bd_vertex.ByteWidth = sizeof(vertices);
+	bd_vertex.ByteWidth = sizeof(VERTEX);
 	bd_vertex.Usage = D3D11_USAGE_DEFAULT;
 	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd_vertex.CPUAccessFlags = 0;
@@ -83,6 +87,9 @@ HRESULT Quad::Initialize()
 		return hr;
 	}
 
+	pTexture_ = new Texture;
+	pTexture_->Load("../Assets/dice.png");
+
 	return S_OK;
 }
 
@@ -94,6 +101,12 @@ void Quad::Draw(DirectX::XMMATRIX& worldMatrix)
 	cb.matWVP = XMMatrixTranspose(worldMatrix * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());
 	Direct3D::pContext->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
+
+	ID3D11SamplerState* pSampler = pTexture_->GetSampler();
+	Direct3D::pContext->PSSetSamplers(0, 1, &pSampler);
+	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
+	Direct3D::pContext->PSSetShaderResources(0, 1, &pSRV);
+
 	Direct3D::pContext->Unmap(pConstantBuffer_, 0);	//再開
 
 	//頂点バッファ
@@ -101,7 +114,7 @@ void Quad::Draw(DirectX::XMMATRIX& worldMatrix)
 	UINT offset = 0;
 	Direct3D::pContext->IASetVertexBuffers(0, 1, &pVertexBuffer_, &stride, &offset);
 
-	// インデックスバッファーをセット
+	//インデックスバッファーをセット
 	stride = sizeof(int);
 	offset = 0;
 	Direct3D::pContext->IASetIndexBuffer(pIndexBuffer_, DXGI_FORMAT_R32_UINT, 0);
@@ -115,6 +128,9 @@ void Quad::Draw(DirectX::XMMATRIX& worldMatrix)
 
 void Quad::Release()
 {
+	pTexture_->Release();
+	SAFE_DELETE(pTexture_);
+
 	SAFE_RELEASE(pConstantBuffer_);
 	SAFE_RELEASE(pIndexBuffer_);
 	SAFE_RELEASE(pVertexBuffer_);
